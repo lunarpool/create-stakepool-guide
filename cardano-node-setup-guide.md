@@ -333,3 +333,8 @@ Restart chrony to apply the configuration
 ```
 sudo systemctl restart chrony
 ```
+## Configure tmux
+Prepare config file to enable mouse control for multi terminal environment. The following will append a line to .tmux.conf file
+```
+echo "set -g mouse on" >> ~/.tmux.conf
+```
