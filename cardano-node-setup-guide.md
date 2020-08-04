@@ -258,8 +258,78 @@ Save and exit using ctrl+o, ctrl+x
 # Edit Bash profile
 nano ~/.bash_profile
 ```
-Paste the following into the .bash_profile file
+Paste the following into .bash_profile file
 ```
 export ARCHFLAGS="-arch x86_64"
 test -f ~/.bashrc && source ~/.bashrc
+```
+Save and exit using ctrl+o, ctrl+x
+
+## Time synchronization via chrony
+Edit the configuration file /etc/chrony/chrony.conf
+```
+sudo nano /etc/chrony/chrony.conf
+```
+Paste the following into /etc/chrony/chrony.conf (don't forget to replace placeholder text)
+```
+# Welcome to the chrony configuration file. See chrony.conf(5) for more
+# information about usuable directives.
+
+# This will use (up to):
+# - 4 sources from ntp.ubuntu.com which some are ipv6 enabled
+# - 2 sources from 2.ubuntu.pool.ntp.org which is ipv6 enabled as well
+# - 1 source from [01].ubuntu.pool.ntp.org each (ipv4 only atm)
+# This means by default, up to 6 dual-stack and up to 2 additional IPv4-only
+# sources will be used.
+# At the same time it retains some protection against one of the entries being
+# down (compare to just using one of the lines). See (LP: #1754358) for the
+# discussion.
+#
+# About using servers from the NTP Pool Project in general see (LP: #104525).
+# Approved by Ubuntu Technical Board on 2011-02-08.
+# See http://www.pool.ntp.org/join.html for more information.
+#pool ntp.ubuntu.com        iburst maxsources 4
+#pool 0.ubuntu.pool.ntp.org iburst maxsources 1
+#pool 1.ubuntu.pool.ntp.org iburst maxsources 1
+#pool 2.ubuntu.pool.ntp.org iburst maxsources 2
+
+pool <CLOSEST NTP SERVER>              iburst minpoll 1 maxpoll 1 maxsources 3
+pool <SECOND CLOSEST NTP SERVER>       iburst minpoll 1 maxpoll 1 maxsources 3
+pool time.google.com                   iburst minpoll 1 maxpoll 1 maxsources 3
+pool ntp.ubuntu.com                    iburst minpoll 1 maxpoll 1 maxsources 3
+
+# This directive specify the location of the file containing ID/key pairs for
+# NTP authentication.
+keyfile /etc/chrony/chrony.keys
+
+# This directive specify the file into which chronyd will store the rate
+# information.
+driftfile /var/lib/chrony/chrony.drift
+
+# Uncomment the following line to turn logging on.
+#log tracking measurements statistics
+
+# Log files location.
+logdir /var/log/chrony
+
+# Stop bad estimates upsetting machine clock.
+maxupdateskew 5.0
+
+# This directive enables kernel synchronisation (every 11 minutes) of the
+# real-time clock. Note that it can’t be used along with the 'rtcfile' directive.
+rtcsync
+
+# Step the system clock instead of slewing it if the adjustment is larger than
+# one second, but only in the first three clock updates.
+makestep 0.1 -1
+
+# Get TAI-UTC offset and leap seconds from the system tz database
+leapsectz right/UTC
+
+# Serve time even if not synchronized to a time source.
+local stratum 10
+```
+### Restart chrony to apply the configuration
+```
+sudo systemctl restart chrony
 ```
