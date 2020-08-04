@@ -1,4 +1,4 @@
-# Setup Cardano Shelley Stakepool (Ubuntu 20.04)
+# Setup cardano-node stakepool (Ubuntu 20.04)
 
 This guide is for educational purposes only. Do not use in production with real funds or do it at your own risk. By using this guide, you assume sole risk and waive any claims of liability against the author.  
 
