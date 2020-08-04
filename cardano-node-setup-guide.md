@@ -11,6 +11,5 @@ This guide is for educational purposes only. Do not use in production with real 
 * Author: lunarpool.io (stake-pools: **MOON1** | **MOON2** | **MOON9**)  
 
 * Thanks to these expert contributors!  
-
 Input Output HK - [Cardano Tutorials](https://docs.cardano.org/projects/cardano-node/en/latest/getting-started/install.html)  
 Chris Graffagnino - **MASTR** ([Jörmungandr node setup guide](https://github.com/Chris-Graffagnino/Jormungandr-for-Newbs/blob/master/docs/jormungandr_node_setup_guide.md))
