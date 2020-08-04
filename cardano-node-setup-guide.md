@@ -8,7 +8,7 @@ This guide is for educational purposes only. Do not use in production with real 
 -- Note: anything all-caps in between "<>" is an placeholder; e.g. `"<FILENAME>"` could be `"foo.txt"`.   
 -- Note: anything in between "${}" is a variable that will be evaluated by your shell.  
 
-* Author: lunarpool.io (stake-pools: **MOON1** | **MOON2** | **MOON9**)  
+* Author: **lunarpool.io** (stake-pools: **MOON1** | **MOON2** | **MOON9**)  
 
 * Thanks to these expert contributors!  
 Input Output HK - [Cardano Tutorials](https://docs.cardano.org/projects/cardano-node/en/latest/getting-started/install.html)  
