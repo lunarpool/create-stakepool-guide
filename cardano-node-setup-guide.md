@@ -329,7 +329,7 @@ leapsectz right/UTC
 # Serve time even if not synchronized to a time source.
 local stratum 10
 ```
-### Restart chrony to apply the configuration
+Restart chrony to apply the configuration
 ```
 sudo systemctl restart chrony
 ```
