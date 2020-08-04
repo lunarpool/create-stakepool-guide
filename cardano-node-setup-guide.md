@@ -13,6 +13,7 @@ This guide is for educational purposes only. Do not use in production with real 
 * Thanks to these expert contributors!  
 Input Output HK - [Cardano Tutorials](https://docs.cardano.org/projects/cardano-node/en/latest/getting-started/install.html)  
 Chris Graffagnino - **MASTR** ([Jörmungandr node setup guide](https://github.com/Chris-Graffagnino/Jormungandr-for-Newbs/blob/master/docs/jormungandr_node_setup_guide.md))
+Martin from - **ATADA** ([Useful setup scripts](https://github.com/gitmachtl/scripts/tree/master/cardano/mainnet-release-candidate))
 
 ## Private ssh keys
 This tutorial is trying to setup secured access to your server, therefore we will (among other things) change default ssh ports, disable root login and disable password authentication. That is why we need these ssh keys which will be used for authentication. So everytime you would like to login to your server you would need these keys.
@@ -438,7 +439,7 @@ ufw allow proto tcp from any to any port <PORT NUMBER>
 ```
 and repeat the steps below for folders like ~/cardano-node/node2, ~/cardano-node/node3 and so on.
 
-# Configuring cardano-node "node1"
+# Configuring cardano-node instance "node1"
 
 ## Download default configuration, genesis and topology files
 ```
@@ -458,4 +459,65 @@ wget https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-fi
 Add peers to your topology.json, this depends on your desired infrastructure and the node you currently set up. By default the topology file consist of a pair of nodes provided by IOHK, which is sufficient in early stages of Shelley. Recommended topology is core –> private relay –> public relay –> other public relays but this is out of scope od this guide.
 ```
 nano ~/cardano-node/node1/topology.json
+```
+
+## Start passive node
+Now you are ready to start your node as pasive node (relay) and begin initial synchronization. Relay is not producing blocks it just receives and further spreads blocks its a key distribution part of the network. I would recommend to start all the nodes as relays for the initial sync.
+
+(don't forget to replace path and public IP address if necessary):
+```
+ cardano-node run \
+   --topology ~/cardano-node/node1/mainnet-topology.json \
+   --database-path ~/cardano-node/node1/db \
+   --socket-path ~/cardano-node/node1/node.socket \
+   --host-addr x.x.x.x \
+   --port 3000 \
+   --config ~/cardano-node/node1/mainnet-config.json
+```
+
+# Running a stakepool
+Bravo! You made it to the point where we need to include another source, ATADA stake pool repo ([Useful setup scripts](https://github.com/gitmachtl/scripts/tree/master/cardano/mainnet-release-candidate#examples))
+
+## Downloading scripts
+Download scripts from github repo and place them in "scripts" directory in the home folder of the <USERNAME>
+```
+cd
+git clone https://github.com/gitmachtl/scripts
+mv scripts/cardano/mainnet-release-candidate/* scripts/
+rm scripts/cardano -R
+rm scripts/.git -R
+rm scripts/.gitignore
+```
+  
+## Edit scripts configuration
+```
+cd ~/scripts
+nano 00_common.sh
+```
+Make sure variables defined at the beginning of the file contains following (replace placeholder with user name)
+```
+socket="/home/<USER NAME>/cardano-node/node1/db/node.socket"
+
+genesisfile="/home/<USER NAME>/cardano-node/node1/mainnet-shelley-genesis.json"           #Shelley
+genesisfile_byron="/home/<USER NAME>/cardano-node/node1/mainnet-byron-genesis.json"       #Byron
+
+cardanocli="cardano-cli"
+cardanonode="cardano-node"
+```
+
+## Load scripts configuration
+```
+cd
+bash 00_common.sh
+```
+
+## Create a folder with files cointaining critical stakepool keys
+```
+mkdir files
+```
+
+## Register a pool
+We are now following steps to register a pool which are described here: [https://github.com/gitmachtl/scripts/tree/master/cardano/mainnet-release-candidate#examples](https://github.com/gitmachtl/scripts/tree/master/cardano/mainnet-release-candidate#examples)
+```
+cd files/
 ```
