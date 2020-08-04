@@ -193,3 +193,62 @@ sudo nano /etc/ssh/sshd_config
 # NOTE: Once you do this, you will only be able to log-in using your SSH private key as non-root user
 sudo service sshd reload
 ```
+
+## Configuring SWAP memory
+If you run out of physical memory, you use virtual memory, which stores the data in memory on the disk (so not in RAM but in your HDD/SDD). Many VPS come with already pre-configured swap so we will firstly check with:
+```
+# Show current swap configuration
+sudo swapon --show
+```
+If you get back a line with current setup then you can skip this section, if you have limited diskspace skip as well, otherwise continue with the commands below:
+```
+# Check what swap is currently active, if any
+free -h
+
+# Check current disk usage
+df -h
+
+# Create swap file (Don't forget the "G")
+sudo fallocate -l <SIZE EQUAL TO RAM>G /swapfile
+
+# Verify swap settings
+ls -lh /swapfile
+
+# Only root can access swapfile
+sudo chmod 600 /swapfile
+
+# Mark the file as swap space
+sudo mkswap /swapfile
+
+# Enable swap settings every time we log in
+# Make a backup of /etc/fstab
+sudo cp /etc/fstab /etc/fstab.bak
+
+# Type this command from the command-line to add swap settings to the end of fstab
+echo '/swapfile none swap sw 00' | sudo tee -a /etc/fstab
+
+# Enable swap
+sudo swapon -a
+
+# Verify swap is enabled
+free -h
+```
+
+## Setup your Bash environment
+We have to append the following code to your ~/.bashrc file, it will basically setup the default paths within your environment. So everytime you run the shell these settings will be applied.
+
+```
+# Edit Bash configuration script
+nano ~/.bashrc
+```
+
+Append following lines (don't forget to replace placeholder text)
+```
+export PS1="<SERVER NAME> \[\e[36m\]\w\[\e[m\]\[\e[35m\] \`parse_git_branch\`\[\e[m\] \[\e[36m\]:\[\e[m\] "
+export PATH="~/.cabal/bin:$PATH"
+export PATH="~/.local/bin:$PATH"
+export PATH="~/scripts:$PATH"
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export CARDANO_NODE_SOCKET_PATH="/home/<YOUR USERNAME>/cardano-node/node1/db/node.socket"
+export CNODE_HOME=/opt/cardano/cnode
+```
