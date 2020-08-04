@@ -338,3 +338,12 @@ Prepare config file to enable mouse control for multi terminal environment. The 
 ```
 echo "set -g mouse on" >> ~/.tmux.conf
 ```
+
+# You finished your linux setting! Buy Chris Graffagnino a beer!
+Up to this point almost all the steps and settings were adoptet from Chris's [Jormungandr-for-Newbs](https://github.com/Chris-Graffagnino/Jormungandr-for-Newbs/blob/master/docs/jormungandr_node_setup_guide.md) guide.
+```
+DdzFFzCqrht3kMqsjpaLjr3L8tw5Jn2E9Vr9id9R33jB1P4TqRKZ87UVkzrF9NMarNLNKx5fuahvHiaD4Cz9K71CD69QQDBzS5mExsMr
+```
+
+# Let's continue installing cardano-node from source
+Primary source for next steps was github repo used for F&F testnet as [Node Setup Tutorials](https://github.com/input-output-hk/cardano-tutorials/tree/master/node-setup) which has moved to current official documentation [https://docs.cardano.org/en/latest/](https://docs.cardano.org/en/latest/)
