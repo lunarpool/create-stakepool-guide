@@ -116,3 +116,80 @@ We will change the ssh port and therefore will disable the firewall
 # To avoid any lockouts, disable the firewall
 ufw disable
 ```
+
+## Change default ssh port
+Make sure to you proceed the ufw section as well which is required  to allow communication to your new ssh port, otherwise your server may end up unaccessible
+```
+# Changing this setting REQUIRES also opening the same port with ufw (next section of this guide)
+# Don't skip the ufw section, or else you will be locked out.
+
+# Note: there is also a file called "ssh_config"... don't edit that one
+nano /etc/ssh/sshd_config
+
+# Change the line "#Port 22", to "Port <CHOOSE A PORT BETWEEN 1024 AND 65535>"
+# Remember to uncomment = remove the leading "#"
+
+# While we're here, let's give ourselves just a bit more time before getting disconnected, ie "broken pipe".
+# Change the line "#TCPKeepAlive yes" to "TCPKeepAlive no"
+# Change the line "#ClientAliveInterval 0" to "ClientAliveInterval 1800"
+
+# Save & close the file
+ctrl+o
+ctrl+x
+```
+
+## Configure firewall (ufw)
+```
+# Set defaults for incoming/outgoing ports
+ufw default deny incoming
+ufw default allow outgoing
+
+# Open ssh port (rate limiting enabled - max 10 attempts within 30 seconds)
+ufw limit proto tcp from any to any port <THE PORT YOU JUST CHOSE IN sshd_config IN STEPS ABOVE>
+
+# Open a port for your public_address. This is the port other nodes will connect to.
+ufw allow proto tcp from any to any port 3000
+
+# Re-enable firewall
+ufw enable
+
+# Double-check the port you chose for ssh was the same as what you set in /etc/ssh/sshd_config
+# First command returns ssh port you set up
+# Second command lists firewall rules, you should see your new ssh port with ALLOW IN
+grep "Port " /etc/ssh/sshd_config
+ufw status verbose
+
+# Double-check your new user is in the sudo group
+# This should return your username
+grep '^sudo:.*$' /etc/group | cut -d: -f4
+
+# Reboot (You will be kicked off... wait a couple of seconds before logging in)
+reboot
+```
+
+## Login with your new user
+Use terminal or New Remote Connection with following setup, use the user, ssh port and private key you just created
+```
+ssh -p <SSH PORT> -i ~/.ssh/<YOUR SSH PRIVATE KEY> <USERNAME>@<YOUR VPS PUBLIC IP ADDRESS>
+```
+
+## Finalize ssh setting
+```
+# Edit sshd_config one more time
+sudo nano /etc/ssh/sshd_config
+
+# Reduce logging to save resources
+(Change "LogLevel" from "INFO" to "VERBOSE"
+
+# Disabling root login is considered a security best-practice
+(Change "PermitRootLogin" from "yes" to "no")
+
+# Disabling log-in via password helps mitigate brute-force attacks
+(Change "PasswordAuthentication" to "no")
+
+(ctrl+o to save, ctrl+x to exit)
+
+# Reload the ssh daemon
+# NOTE: Once you do this, you will only be able to log-in using your SSH private key as non-root user
+sudo service sshd reload
+```
