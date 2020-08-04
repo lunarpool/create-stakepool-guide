@@ -265,6 +265,11 @@ test -f ~/.bashrc && source ~/.bashrc
 ```
 Save and exit using ctrl+o, ctrl+x
 
+Load configuration immmediately
+```
+source ~/.bashrc
+```
+
 ## Time synchronization via chrony
 Edit the configuration file /etc/chrony/chrony.conf
 ```
@@ -328,6 +333,8 @@ leapsectz right/UTC
 
 # Serve time even if not synchronized to a time source.
 local stratum 10
+
+(ctrl+o to save, ctrl+x to exit)
 ```
 Restart chrony to apply the configuration
 ```
@@ -347,3 +354,108 @@ DdzFFzCqrht3kMqsjpaLjr3L8tw5Jn2E9Vr9id9R33jB1P4TqRKZ87UVkzrF9NMarNLNKx5fuahvHiaD
 
 # Let's continue installing cardano-node from source
 Primary source for next steps was github repo used for F&F testnet as [Node Setup Tutorials](https://github.com/input-output-hk/cardano-tutorials/tree/master/node-setup) which has moved to current official documentation [https://docs.cardano.org/en/latest/](https://docs.cardano.org/en/latest/)
+
+## Install dependencies
+```
+sudo apt-get update -y
+sudo apt-get install automake build-essential pkg-config libffi-dev libgmp-dev libssl-dev libtinfo-dev libsystemd-dev zlib1g-dev make g++ tmux git jq wget libncursesw5 libtool autoconf -y
+```
+
+## Install Cabal
+```
+wget https://downloads.haskell.org/~cabal/cabal-install-3.2.0.0/cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz
+tar -xf cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz
+rm cabal-install-3.2.0.0-x86_64-unknown-linux.tar.xz cabal.sig
+mkdir -p ~/.local/bin
+mv cabal ~/.local/bin/
+```
+## Update Cabal
+```
+cabal update
+```
+
+## Edit cabal config
+```
+# Open config file
+nano ~/.cabal/config
+
+# Locate line with "overwrite-policy"
+# Uncomment by deleting leading --
+# (Change "overwrite-policy" to "always")
+
+(ctrl+o to save, ctrl+x to exit)
+```
+
+## Install GHC
+```
+wget https://downloads.haskell.org/~ghc/8.6.5/ghc-8.6.5-x86_64-deb9-linux.tar.xz
+tar -xf ghc-8.6.5-x86_64-deb9-linux.tar.xz
+rm ghc-8.6.5-x86_64-deb9-linux.tar.xz
+cd ghc-8.6.5
+./configure
+sudo make install
+```
+
+## Install Libsodium
+```
+cd
+git clone https://github.com/input-output-hk/libsodium
+cd libsodium
+git checkout 66f017f1
+./autogen.sh
+./configure
+make
+sudo make install
+```
+
+## Download cardano-node
+Don't forget to replace <TAGGED VERSION> with the latest tag (in the time of writing 1.18.0)
+```
+cd
+git clone https://github.com/input-output-hk/cardano-node.git
+cd cardano-node
+git fetch --all --tags
+git tag
+git checkout tags/<TAGGED VERSION>
+```
+
+## Build and install cardano-node
+This will take some time (a lot of) so in the meantime you can run second ssh session and continue further while cardano-node is building.
+```
+cabal build all
+```
+
+# Configuring cardano-node
+
+## Configuring more nodes on a server
+This tutorial configures 1 node (instance of cardano-node) on the server that operates with following condidtions:
+* Node port: 3000
+* Node folder: ~/cardano-node/node1
+
+If you would like to run multiple instance on the same server you just need to open another firewall ports:
+```
+ufw allow proto tcp from any to any port <PORT NUMBER>
+```
+and repeat the steps below for folders like ~/cardano-node/node2, ~/cardano-node/node3 and so on.
+
+# Configuring cardano-node "node1"
+
+## Download default configuration, genesis and topology files
+```
+# Create node folder (for config and db files)
+cd ~/cardano-node
+mkdir node1
+cd node1
+
+# Download config, genesis, topology files
+wget https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/mainnet-config.json
+wget https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/mainnet-byron-genesis.json
+wget https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/mainnet-shelley-genesis.json
+wget https://hydra.iohk.io/job/Cardano/cardano-node/cardano-deployment/latest-finished/download/1/mainnet-topology.json
+```
+
+## Edit topology.json
+Add peers to your topology.json, this depends on your desired infrastructure and the node you currently set up. By default the topology file consist of a pair of nodes provided by IOHK, which is sufficient in early stages of Shelley. Recommended topology is core –> private relay –> public relay –> other public relays but this is out of scope od this guide.
+```
+nano ~/cardano-node/node1/topology.json
+```
