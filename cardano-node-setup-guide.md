@@ -508,7 +508,7 @@ cardanonode="cardano-node"
 ## Load scripts configuration
 ```
 cd
-bash 00_common.sh
+source 00_common.sh
 ```
 
 ## Create a folder with files cointaining critical stakepool keys
