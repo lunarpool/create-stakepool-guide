@@ -242,7 +242,7 @@ We have to append the following code to your ~/.bashrc file, it will basically s
 nano ~/.bashrc
 ```
 
-Append following lines (don't forget to replace placeholder text)
+Append the following lines (don't forget to replace placeholder text)
 ```
 export PS1="<SERVER NAME> \[\e[36m\]\w\[\e[m\]\[\e[35m\] \`parse_git_branch\`\[\e[m\] \[\e[36m\]:\[\e[m\] "
 export PATH="~/.cabal/bin:$PATH"
@@ -251,4 +251,15 @@ export PATH="~/scripts:$PATH"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export CARDANO_NODE_SOCKET_PATH="/home/<YOUR USERNAME>/cardano-node/node1/db/node.socket"
 export CNODE_HOME=/opt/cardano/cnode
+```
+Save and exit using ctrl+o, ctrl+x
+
+```
+# Edit Bash profile
+nano ~/.bash_profile
+```
+Paste the following into the .bash_profile file
+```
+export ARCHFLAGS="-arch x86_64"
+test -f ~/.bashrc && source ~/.bashrc
 ```
